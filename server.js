@@ -7,7 +7,15 @@ const fs = require('fs');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_change_in_production';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  if (process.env.NODE_ENV === 'production') {
+    console.error('FATAL: JWT_SECRET environment variable is not set. Exiting.');
+    process.exit(1);
+  }
+  console.warn('WARNING: JWT_SECRET is not set. Using an insecure default – set JWT_SECRET in .env before deploying.');
+}
+const JWT_SIGNING_SECRET = JWT_SECRET || 'dev_secret_change_in_production';
 const USERS_FILE = path.join(__dirname, 'users.json');
 
 // ── Persistent user store helpers ─────────────────────
@@ -56,7 +64,7 @@ app.post('/auth/register', async (req, res) => {
   accounts[key] = { username, hash };
   saveAccounts(accounts);
 
-  const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '7d' });
+  const token = jwt.sign({ username }, JWT_SIGNING_SECRET, { expiresIn: '7d' });
   res.json({ token, username });
 });
 
@@ -78,7 +86,7 @@ app.post('/auth/login', async (req, res) => {
     return res.status(401).json({ error: 'Invalid username or password.' });
   }
 
-  const token = jwt.sign({ username: account.username }, JWT_SECRET, { expiresIn: '7d' });
+  const token = jwt.sign({ username: account.username }, JWT_SIGNING_SECRET, { expiresIn: '7d' });
   res.json({ token, username: account.username });
 });
 
@@ -105,7 +113,7 @@ io.use((socket, next) => {
     return next(new Error('Authentication required.'));
   }
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SIGNING_SECRET);
     socket.username = decoded.username;
     next();
   } catch {

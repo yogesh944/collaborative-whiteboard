@@ -65,7 +65,9 @@ class MeetManager {
     try {
       this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     } catch (err) {
-      alert('Could not access camera/microphone: ' + err.message);
+      if (window.app && window.app.showToast) {
+        window.app.showToast('Could not access camera/microphone: ' + err.message);
+      }
       return;
     }
 
@@ -137,7 +139,7 @@ class MeetManager {
   _removePeer(peerId) {
     const peer = this.peers.get(peerId);
     if (peer) {
-      try { peer.destroy(); } catch {}
+      try { peer.destroy(); } catch { /* ignore destroy errors during cleanup */ }
       this.peers.delete(peerId);
     }
     const tile = document.getElementById('video-tile-' + peerId);
@@ -149,7 +151,7 @@ class MeetManager {
     const vid = document.getElementById('local-video');
     vid.srcObject = stream;
     vid.muted = true;
-    vid.play().catch(() => {});
+    vid.play().catch(() => { /* autoplay may be blocked by browser policy until user interaction */ });
   }
 
   _addRemoteVideo(peerId, stream) {
