@@ -11,7 +11,15 @@ class SocketManager {
   }
 
   connect() {
-    this.socket = io();
+    this.socket = io({ auth: { token: window.CB_TOKEN } });
+
+    this.socket.on('connect_error', (err) => {
+      if (err.message === 'Authentication required.' || err.message === 'Invalid or expired token.') {
+        localStorage.removeItem('cb_token');
+        localStorage.removeItem('cb_username');
+        window.location.replace('/login.html');
+      }
+    });
 
     this.socket.on('init', (data) => {
       this.app.localUser = data.user;
@@ -113,6 +121,19 @@ class SocketManager {
     if (now - this.lastCursorEmit < 33) return; // ~30fps throttle
     this.lastCursorEmit = now;
     if (this.socket) this.socket.emit('cursor-move', { x, y });
+  }
+
+  // ── WebRTC / call helpers ──
+  emitWebRTCSignal(to, signal) {
+    if (this.socket) this.socket.emit('webrtc-signal', { to, signal });
+  }
+
+  emitCallJoin() {
+    if (this.socket) this.socket.emit('call-join');
+  }
+
+  emitCallLeave() {
+    if (this.socket) this.socket.emit('call-leave');
   }
 }
 

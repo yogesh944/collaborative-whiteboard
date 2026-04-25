@@ -460,3 +460,168 @@ html, body {
   background: var(--accent);
   color: var(--bg-dark);
 }
+
+/* ── Top Action Pills (Join Call + Logout) ─────────────── */
+#top-actions {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+  animation: slideInTop 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+@keyframes slideInTop {
+  from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.action-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--border-glass);
+  border-radius: 20px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--text-secondary);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.action-pill:hover {
+  background: rgba(167, 139, 250, 0.15);
+  color: var(--accent);
+  border-color: rgba(167, 139, 250, 0.3);
+}
+
+.action-pill.danger {
+  color: var(--danger);
+  border-color: rgba(255, 118, 117, 0.3);
+  background: rgba(255, 118, 117, 0.08);
+}
+
+.action-pill.danger:hover {
+  background: rgba(255, 118, 117, 0.18);
+}
+
+.logout-pill:hover {
+  color: var(--danger);
+  border-color: rgba(255, 118, 117, 0.3);
+  background: rgba(255, 118, 117, 0.08);
+}
+
+/* ── Meet Panel ────────────────────────────────────────── */
+#meet-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10;
+  padding: 12px;
+  width: 200px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+#meet-panel.active {
+  display: flex;
+}
+
+.meet-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-glass);
+}
+
+.local-video-wrap {
+  position: relative;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: rgba(0,0,0,0.4);
+  aspect-ratio: 4/3;
+}
+
+.local-video-wrap video,
+.video-tile video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.video-label {
+  position: absolute;
+  bottom: 6px;
+  left: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(0,0,0,0.5);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.remote-videos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.video-tile {
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: rgba(0,0,0,0.4);
+  aspect-ratio: 4/3;
+  animation: fadeIn 0.3s ease both;
+}
+
+/* ── Meet Controls ─────────────────────────────────────── */
+.meet-controls {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.meet-ctrl-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-glass);
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.meet-ctrl-btn:hover {
+  background: rgba(167, 139, 250, 0.15);
+  color: var(--text-primary);
+}
+
+.meet-ctrl-btn.active-control {
+  background: rgba(255, 118, 117, 0.18);
+  color: var(--danger);
+  border-color: rgba(255, 118, 117, 0.3);
+}
