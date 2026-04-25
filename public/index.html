@@ -110,7 +110,42 @@
   <!-- ── Toast container ── -->
   <div id="toast-container"></div>
 
+  <!-- ── Meet Panel ── -->
+  <div id="meet-panel" class="glass-panel">
+    <div class="meet-header">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      <span>Video Call</span>
+    </div>
+    <div class="local-video-wrap">
+      <video id="local-video" autoplay muted playsinline></video>
+      <span class="video-label">You</span>
+    </div>
+    <div id="remote-videos" class="remote-videos"></div>
+    <div id="meet-controls" class="meet-controls" style="display:none">
+      <button id="btn-mute" class="meet-ctrl-btn" title="Mute">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <button id="btn-camera" class="meet-ctrl-btn" title="Turn camera off">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Call & Logout Buttons (top-right area) ── -->
+  <div id="top-actions">
+    <button id="btn-join-call" class="action-pill" title="Join video call">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      <span>Join Call</span>
+    </button>
+    <button class="action-pill logout-pill" title="Logout" onclick="cbLogout()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      <span>Logout</span>
+    </button>
+  </div>
+
   <script src="/socket.io/socket.io.js"></script>
+  <script src="https://unpkg.com/simple-peer@9.11.1/simplepeer.min.js" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" crossorigin="anonymous"></script>
+  <script src="/js/auth.js"></script>
   <script src="/js/history.js"></script>
   <script src="/js/canvas.js"></script>
   <script src="/js/tools.js"></script>
@@ -118,6 +153,7 @@
   <script src="/js/socket.js"></script>
   <script src="/js/export.js"></script>
   <script src="/js/ui.js"></script>
+  <script src="/js/meet.js"></script>
   <script src="/js/app.js"></script>
 </body>
 </html>

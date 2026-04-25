@@ -34,6 +34,8 @@ class WhiteboardApp {
     this._initCanvasEvents();
     initUI(this);
     this.socketManager.connect();
+    // MeetManager is wired after socket is ready (connect() is sync call, socket assigned immediately)
+    this.meetManager = new MeetManager(this.socketManager);
   }
 
   setTool(name) {
