@@ -26,15 +26,36 @@
   --radius-lg: 16px;
   --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
 }
 
 html, body {
   height: 100%;
+  min-height: 100dvh;
   overflow: hidden;
-  background: var(--bg-dark);
+  background:
+    radial-gradient(circle at top left, rgba(167, 139, 250, 0.16), transparent 28%),
+    radial-gradient(circle at top right, rgba(0, 206, 201, 0.12), transparent 24%),
+    linear-gradient(180deg, #0b0d17 0%, #090b12 100%);
   font-family: var(--font);
   color: var(--text-primary);
   cursor: crosshair;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.8), transparent 85%);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.8), transparent 85%);
+  pointer-events: none;
+  opacity: 0.65;
+}
+
+.hidden {
+  display: none !important;
 }
 
 /* ── Canvas ────────────────────────────────────────────── */
@@ -45,6 +66,7 @@ html, body {
   left: 0;
   width: 100vw;
   height: 100vh;
+  touch-action: none;
 }
 
 #main-canvas {
@@ -94,13 +116,210 @@ html, body {
 /* ── Glass Panel Base ──────────────────────────────────── */
 .glass-panel {
   background: var(--bg-glass);
-  backdrop-filter: blur(20px) saturate(150%);
   -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-lg);
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ── Auth Overlay ──────────────────────────────────────── */
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(167, 139, 250, 0.22), transparent 24%),
+    radial-gradient(circle at 80% 30%, rgba(0, 206, 201, 0.18), transparent 24%),
+    rgba(8, 10, 18, 0.78);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.auth-card {
+  width: min(100%, 460px);
+  padding: 28px;
+  display: grid;
+  gap: 18px;
+}
+
+.auth-brand h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  line-height: 0.95;
+  margin-top: 8px;
+}
+
+.auth-brand p {
+  margin-top: 10px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.auth-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(167, 139, 250, 0.14);
+  color: var(--accent-hover);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.auth-tab {
+  border: 1px solid var(--border-glass);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-secondary);
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.auth-tab.active {
+  background: rgba(167, 139, 250, 0.16);
+  color: var(--text-primary);
+  border-color: rgba(167, 139, 250, 0.35);
+}
+
+.auth-form {
+  display: grid;
+  gap: 12px;
+}
+
+.auth-row {
+  display: grid;
+  gap: 6px;
+}
+
+.auth-row label,
+.room-kicker {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.auth-row input,
+.invite-form input {
+  width: 100%;
+  border: 1px solid var(--border-glass);
+  border-radius: 12px;
+  background: rgba(10, 12, 22, 0.72);
+  color: var(--text-primary);
+  padding: 12px 14px;
+  outline: none;
+  font: inherit;
+}
+
+.auth-row input:focus,
+.invite-form input:focus {
+  border-color: rgba(167, 139, 250, 0.55);
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.12);
+}
+
+.auth-submit,
+.room-btn {
+  border: none;
+  border-radius: 12px;
+  background: rgba(167, 139, 250, 0.18);
+  color: var(--text-primary);
+  padding: 11px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.auth-submit:hover,
+.room-btn:hover {
+  background: rgba(167, 139, 250, 0.28);
+  transform: translateY(-1px);
+}
+
+.auth-error {
+  min-height: 18px;
+  color: #ff9b9b;
+  font-size: 13px;
+}
+
+.room-bar {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  width: min(1120px, calc(100vw - 32px));
+  padding: 14px;
+  display: grid;
+  grid-template-columns: minmax(180px, 1.1fr) auto;
+  gap: 12px 16px;
+  align-items: center;
+}
+
+.room-meta {
+  display: grid;
+  gap: 3px;
+}
+
+.room-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.room-id,
+.voice-status {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.room-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.room-btn.danger {
+  background: rgba(255, 118, 117, 0.14);
+}
+
+.room-btn.accent {
+  background: rgba(0, 184, 148, 0.18);
+}
+
+.invite-form {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr auto;
+  gap: 8px;
+}
+
+.voice-status {
+  grid-column: 1 / -1;
+}
+
+.voice-media {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }
 
 /* ── Toolbar ───────────────────────────────────────────── */
@@ -330,7 +549,7 @@ html, body {
 /* ── Users Panel ───────────────────────────────────────── */
 #users-panel {
   position: fixed;
-  top: 20px;
+  top: 110px;
   right: 20px;
   z-index: 10;
   padding: 12px 16px;
@@ -427,6 +646,7 @@ html, body {
   font-weight: 500;
   color: var(--text-primary);
   background: var(--bg-glass);
+  -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
   border: 1px solid var(--border-glass);
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
@@ -459,4 +679,170 @@ html, body {
 ::selection {
   background: var(--accent);
   color: var(--bg-dark);
+}
+
+@media (max-width: 960px) {
+  #toolbar {
+    left: 8px;
+    right: 8px;
+    top: auto;
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    transform: none;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    padding: 10px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  #toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .toolbar-logo {
+    display: none;
+  }
+
+  .toolbar-divider {
+    width: 1px;
+    height: 30px;
+    margin: 0 2px;
+    flex: 0 0 auto;
+  }
+
+  .toolbar-section {
+    flex-direction: row;
+    gap: 6px;
+    flex: 0 0 auto;
+  }
+
+  .tool-btn,
+  .action-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+
+  .action-btn span {
+    display: none;
+  }
+
+  .stroke-slider {
+    width: 92px;
+  }
+
+  .stroke-value {
+    min-width: 28px;
+    text-align: center;
+  }
+
+  #users-panel {
+    top: auto;
+    right: 8px;
+    bottom: calc(66px + env(safe-area-inset-bottom));
+    min-width: 128px;
+    max-width: 44vw;
+    padding: 10px 12px;
+  }
+
+  .room-bar {
+    top: 8px;
+    width: calc(100vw - 16px);
+    padding: 10px;
+    gap: 8px;
+    grid-template-columns: 1fr;
+  }
+
+  .room-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .room-btn {
+    width: 100%;
+  }
+
+  .invite-form {
+    grid-template-columns: 1fr;
+  }
+
+  #toast-container {
+    bottom: calc(60px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-overlay {
+    align-items: start;
+    overflow-y: auto;
+  }
+
+  .auth-card {
+    margin-top: 16px;
+    padding: 20px;
+  }
+
+  .auth-row input,
+  .invite-form input {
+    font-size: 16px;
+  }
+
+  .toolbar-label,
+  .cursor-label {
+    display: none;
+  }
+
+  .color-palette {
+    display: flex;
+    gap: 5px;
+  }
+
+  .color-swatch {
+    width: 20px;
+    height: 20px;
+  }
+
+  .custom-color-input {
+    width: 36px;
+    height: 24px;
+  }
+
+  .stroke-slider {
+    width: 74px;
+  }
+
+  #users-panel {
+    left: 8px;
+    right: 8px;
+    max-width: none;
+  }
+
+  .room-title {
+    font-size: 16px;
+  }
+
+  .voice-status,
+  .room-id {
+    font-size: 11px;
+  }
 }

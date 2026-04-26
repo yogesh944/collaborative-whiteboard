@@ -8,16 +8,25 @@ class SocketManager {
     this.socket = null;
     this.remoteElements = new Map(); // in-progress remote drawings
     this.lastCursorEmit = 0;
+    this.connectionOptions = null;
   }
 
-  connect() {
-    this.socket = io();
+  connect(options) {
+    this.connectionOptions = options;
+    if (this.socket) {
+      this.socket.disconnect();
+    }
+
+    this.socket = io({
+      auth: options
+    });
+
+    this.socket.on('connect_error', (error) => {
+      this.app.showToast(error.message || 'Socket connection failed');
+    });
 
     this.socket.on('init', (data) => {
-      this.app.localUser = data.user;
-      this.app.canvas.setElements(data.elements);
-      this.app.updateUsers(data.users);
-      this.app.showToast(`Connected as ${data.user.name}`);
+      this.app.handleSocketInit(data);
     });
 
     this.socket.on('user-joined', (user) => {
@@ -81,6 +90,26 @@ class SocketManager {
         this.app.cursorManager.update(data.userId, data.x, data.y, user.name, user.color);
       }
     });
+
+    this.socket.on('voice-user-joined', (payload) => {
+      this.app.voiceManager.handlePeerJoined(payload);
+    });
+
+    this.socket.on('voice-user-left', (payload) => {
+      this.app.voiceManager.handlePeerLeft(payload);
+    });
+
+    this.socket.on('voice-offer', (payload) => {
+      this.app.voiceManager.handleOffer(payload);
+    });
+
+    this.socket.on('voice-answer', (payload) => {
+      this.app.voiceManager.handleAnswer(payload);
+    });
+
+    this.socket.on('voice-ice', (payload) => {
+      this.app.voiceManager.handleIce(payload);
+    });
   }
 
   // ── Emit events ──
@@ -113,6 +142,26 @@ class SocketManager {
     if (now - this.lastCursorEmit < 33) return; // ~30fps throttle
     this.lastCursorEmit = now;
     if (this.socket) this.socket.emit('cursor-move', { x, y });
+  }
+
+  emitVoiceReady() {
+    if (this.socket) this.socket.emit('voice-ready');
+  }
+
+  emitVoiceLeave() {
+    if (this.socket) this.socket.emit('voice-leave');
+  }
+
+  emitVoiceOffer(targetId, offer) {
+    if (this.socket) this.socket.emit('voice-offer', { targetId, offer });
+  }
+
+  emitVoiceAnswer(targetId, answer) {
+    if (this.socket) this.socket.emit('voice-answer', { targetId, answer });
+  }
+
+  emitVoiceIce(targetId, candidate) {
+    if (this.socket) this.socket.emit('voice-ice', { targetId, candidate });
   }
 }
 

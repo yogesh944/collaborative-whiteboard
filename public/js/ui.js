@@ -13,6 +13,90 @@ function initUI(app) {
       app.setTool(btn.dataset.tool);
     });
   });
+  const authOverlay = document.getElementById('auth-overlay');
+  const authForm = document.getElementById('auth-form');
+  const authError = document.getElementById('auth-error');
+  const authNameRow = document.getElementById('auth-name-row');
+  const authSubmit = document.getElementById('auth-submit');
+  const authTabs = document.querySelectorAll('.auth-tab');
+  const authName = document.getElementById('auth-name');
+  const authEmail = document.getElementById('auth-email');
+  const authPassword = document.getElementById('auth-password');
+  const inviteForm = document.getElementById('invite-form');
+  const inviteEmail = document.getElementById('invite-email');
+  const inviteNote = document.getElementById('invite-note');
+
+  let authMode = 'login';
+
+  function setAuthMode(mode) {
+    authMode = mode;
+    authTabs.forEach(tab => tab.classList.toggle('active', tab.dataset.mode === mode));
+    authNameRow.classList.toggle('hidden', mode !== 'signup');
+    authSubmit.textContent = mode === 'signup' ? 'Create account' : 'Enter workspace';
+    authPassword.autocomplete = mode === 'signup' ? 'new-password' : 'current-password';
+    authError.textContent = '';
+  }
+
+  authTabs.forEach(tab => {
+    tab.addEventListener('click', () => setAuthMode(tab.dataset.mode));
+  });
+
+  authForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    authError.textContent = '';
+
+    try {
+      await app.signIn(authMode, {
+        name: authName.value.trim(),
+        email: authEmail.value.trim(),
+        password: authPassword.value
+      });
+      authForm.reset();
+      setAuthMode('login');
+    } catch (error) {
+      authError.textContent = error.message || 'Authentication failed';
+    }
+  });
+
+  document.getElementById('btn-copy-room-link').addEventListener('click', () => app.copyRoomLink());
+
+  document.getElementById('btn-new-room').addEventListener('click', async () => {
+    const name = window.prompt('Room name', `${app.authUser?.name || 'My'} room`);
+    if (!name) return;
+    try {
+      await app.createRoom(name.trim());
+      app.showToast('New room created');
+    } catch (error) {
+      app.showToast(error.message || 'Could not create room');
+    }
+  });
+
+  document.getElementById('btn-leave-room').addEventListener('click', () => app.leaveWorkspace());
+
+  document.getElementById('btn-voice').addEventListener('click', async () => {
+    try {
+      await app.voiceManager.toggle();
+    } catch (error) {
+      app.showToast(error.message || 'Voice chat could not start');
+    }
+  });
+
+  inviteForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    try {
+      const payload = await app.sendInvite(inviteEmail.value.trim(), inviteNote.value.trim());
+      inviteEmail.value = '';
+      inviteNote.value = '';
+      app.showToast(payload.sent ? 'Invite sent by email' : 'Invite link generated');
+      if (!payload.sent && payload.inviteUrl) {
+        await navigator.clipboard.writeText(payload.inviteUrl);
+      }
+    } catch (error) {
+      app.showToast(error.message || 'Invite could not be sent');
+    }
+  });
+
+  setAuthMode('login');
 
   // ── Color palette ──
   const swatches = document.querySelectorAll('.color-swatch');
